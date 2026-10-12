@@ -1,0 +1,8 @@
+numpy<2
+opencv-python-headless
+onnxruntime
+insightface
+cython
+edge-tts
+yt-dlp
+pyyaml

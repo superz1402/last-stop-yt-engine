@@ -1,0 +1,47 @@
+slug: blackpink-no-next
+title: "Why There Will Be No Next BLACKPINK"
+target_duration_s: 2040        # 34:00 exactly
+min_clips_per_entity: 12
+intro_music_s: 6
+outro_music_s: 8
+
+rules:
+  allow_images: false          # R1 — hard law
+
+voice:
+  model: en-US-AndrewMultilingualNeural
+  rate: "-12%"                 # calibrated: ~154 wpm documentary pace
+
+editing:
+  slot_target_s: 6.0
+  base_pause_s: 0.75
+  gap_scale_bounds: [0.5, 3.5]
+  max_uses_per_clip: 3
+  max_clips_per_source_entity: 60
+
+music:
+  query: "dark ambient documentary drone"
+
+# character-lock centroids: solo-MV bootstrap (BLACKPINK) + vendored refs (BABYMONSTER)
+refs:
+  jennie:   {solo_source: solo_jennie}
+  lisa:     {solo_source: solo_lisa}
+  rose:     {solo_source: solo_rose}
+  jisoo:    {solo_source: solo_jisoo}
+  ahyeon:   {builtin: ahyeon}
+  asa:      {builtin: asa}
+  chiquita: {builtin: chiquita}
+  pharita:  {builtin: pharita}
+  rami:     {builtin: rami}
+  rora:     {builtin: rora}
+  ruka:     {builtin: ruka}
+
+release:
+  repo: superz1402/last-stop-yt-engine
+  title: "Why There Will Be No Next BLACKPINK — 34:00 ultra documentary (1080p)"
+  notes: |
+    First production run of last stop yt engine.
+    34:00 · 1920x1080 · 30fps H.264 · AAC 192k 48kHz stereo · -14 LUFS · faststart.
+    No still images anywhere in the film (R1). Character lock verified (R2):
+    narration names an entity, that entity is on screen — face-verified via
+    InsightFace centroids. QC report + used-sources manifest attached.

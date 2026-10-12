@@ -1,0 +1,56 @@
+name: build documentary
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: "Project dir under projects/"
+        required: false
+        default: "projects/blackpink-no-next"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-core
+
+      - name: python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ytagent-cli || echo "ytagent-cli unavailable — ladder falls back to yt-dlp"
+
+      - name: build (full cycle)
+        run: python -m engine.cli build ${{ inputs.project }}
+        env:
+          HOME: /home/runner
+
+      - name: upload build reports (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: |
+            ${{ inputs.project }}/build/*.json
+            ${{ inputs.project }}/build/.done/
+          if-no-files-found: ignore
+
+      - name: upload final (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: final
+          path: ${{ inputs.project }}/build/final.mp4
+          if-no-files-found: ignore

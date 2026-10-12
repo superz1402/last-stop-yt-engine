@@ -1,0 +1,58 @@
+# Entity graph for blackpink-no-next — drives the R2 character lock.
+entities:
+  "blackpink:group":
+    label: "BLACKPINK"
+    kind: group
+    members: [jisoo, jennie, rose, lisa]
+  jisoo:
+    label: "Jisoo"
+    kind: person
+    umbrellas: ["blackpink:group"]
+  jennie:
+    label: "Jennie"
+    kind: person
+    umbrellas: ["blackpink:group"]
+  rose:
+    label: "Rosé"
+    kind: person
+    umbrellas: ["blackpink:group"]
+  lisa:
+    label: "Lisa"
+    kind: person
+    umbrellas: ["blackpink:group"]
+
+  yg:
+    label: "YG Entertainment"
+    kind: org
+    umbrella_for: ["blackpink:group", "twone1", "babymonster:group"]
+
+  twone1:
+    label: "2NE1"
+    kind: group
+    umbrellas: [yg]
+  "babymonster:group":
+    label: "BABYMONSTER"
+    kind: group
+    members: [ahyeon, asa, chiquita, pharita, rami, rora, ruka]
+    umbrellas: [yg]
+  ahyeon:
+    label: "Ahyeon"
+    kind: person
+    umbrellas: ["babymonster:group"]
+
+  gen4:
+    label: "the fourth generation"
+    kind: umbrella
+    umbrella_for: [newjeans, ive, aespa]
+  newjeans:
+    label: "NewJeans"
+    kind: group
+    umbrellas: [gen4]
+  ive:
+    label: "IVE"
+    kind: group
+    umbrellas: [gen4]
+  aespa:
+    label: "aespa"
+    kind: group
+    umbrellas: [gen4]

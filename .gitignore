@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+projects/*/build/
+!projects/*/.gitkeep
+*.mp4
+*.mp3
+*.wav
