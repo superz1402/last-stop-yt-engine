@@ -111,17 +111,17 @@ def phase3(project: Project, timeline: dict, master: str) -> str:
         fparts.append(f"[{j + 2}:a]aformat=sample_rates=48000:channel_layouts=stereo,"
                       f"adelay={ms}|{ms}[vj{j}]")
     fparts.append("[1:a]aformat=sample_rates=48000:channel_layouts=stereo,"
-                  "volume=0.32,asplit=2[bedm][bedk]")
+                  "volume=0.32[bed]")
     if voices:
         mix_ins = "".join(f"[vj{j}]" for j in range(len(voices)))
         fparts.append(f"{mix_ins}amix=inputs={len(voices)}:normalize=0,"
                       "dropout_transition=0,asplit=2[vm1][vmk]")
-        fparts.append("[bedk][vmk]sidechaincompress=threshold=0.015:ratio=7:"
+        fparts.append("[bed][vmk]sidechaincompress=threshold=0.015:ratio=7:"
                       "attack=120:release=700[duck]")
         fparts.append("[vm1][duck]amix=inputs=2:normalize=0,"
                       f"loudnorm={LOUDNORM}[aout]")
     else:
-        fparts.append("[bedm]loudnorm=" + LOUDNORM + "[aout]")
+        fparts.append("[bed]loudnorm=" + LOUDNORM + "[aout]")
 
     deficit = timeline["target"] - timeline["actual"]
     pad = max(0.0, deficit) + 2.0
