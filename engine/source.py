@@ -147,7 +147,9 @@ def validate(path: str, entry: dict) -> tuple[bool, str]:
     if not f.exists() or f.stat().st_size < 1_000_000:
         return False, "too small/missing"
     head = f.read_bytes()[:12]
-    if not any(head.startswith(m) for m in MAGIC):
+    # generic container check: any ftyp box, MP4 non-ftyp mdat-first, EBML/webm
+    if not (head[4:8] == b"ftyp" or head.startswith(b"\x1a\x45\xdf\xa3")
+            or head[4:8] == b"free" or head[4:8] == b"skip" or head[4:8] == b"moov"):
         return False, "bad magic"
     info = probe_media(f)
     streams = info.get("streams", [])
