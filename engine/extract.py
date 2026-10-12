@@ -138,11 +138,12 @@ def _window_clips(segs: list[list[float]], shots: list[list[float]],
 
 
 def _scene_clips(shots: list[list[float]]) -> list[list[float]]:
-    """Merge tiny shots, split long ones → entity-level 2.5–9 s clips."""
+    """Fill-to-minimum merge (spans grow until ≥ CLIP_MIN_S), then split
+    long spans into ≤ CLIP_MAX_S windows → entity-level 2.5–9 s clips."""
     merged = []
     for a, b in shots:
-        if merged and (b - merged[-1][0]) < CLIP_MIN_S:
-            merged[-1][1] = b
+        if merged and (merged[-1][1] - merged[-1][0]) < CLIP_MIN_S:
+            merged[-1][1] = b          # still filling this span to minimum
         else:
             merged.append([a, b])
     clips = []
@@ -183,11 +184,10 @@ def extract_source(project: Project, entry: dict, path: str) -> list[dict]:
                 clips.append({"entity": c, "start": round(a, 2),
                               "end": round(b, 2), "confidence": conf,
                               "kind": "member"})
-        for a, b in shots:
-            if (b - a) >= CLIP_MIN_S:
-                clips.append({"entity": ents, "start": round(a, 2),
-                              "end": round(b, 2), "confidence": 1.0,
-                              "kind": "group"})
+        for a, b in _scene_clips(shots):
+            clips.append({"entity": ents, "start": round(a, 2),
+                          "end": round(b, 2), "confidence": 1.0,
+                          "kind": "group"})
     else:
         for a, b in _scene_clips(shots):
             clips.append({"entity": ents, "start": round(a, 2),
