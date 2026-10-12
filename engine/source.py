@@ -1,11 +1,13 @@
-"""S4 DOWNLOAD — sourcing ladder (R4): ytagent → yt-dlp android_vr → yt-dlp.
+"""S4 DOWNLOAD — sourcing ladder (R4).
 
-Every artifact is validated (magic bytes, ffprobe streams, duration window,
-min height) before it may enter the pool. Failed sources are dropped and
-logged; `required` sources and per-entity minimums gate the build.
+On Actions runners, plain yt-dlp hits YouTube's datacenter bot-check. The
+proven bypass (from the ahyeon-documentary download farm, battle-tested
+2026): Cloudflare WARP proxy + BGutil PO-token provider, mweb/web/web_safari
+clients. The workflow exports WARP_PROXY and BGUTIL_URL; the ladder reads
+them and prefers farm attempts. Falls back gracefully when unset.
 """
 from __future__ import annotations
-import json, shutil, subprocess, sys
+import json, os, shutil, subprocess, sys, time
 
 from .config import Project, probe_media
 
@@ -13,63 +15,96 @@ MAGIC = {b"\x00\x00\x00\x18ftypmp42", b"\x00\x00\x00\x20ftypisom",
          b"\x00\x00\x00\x18ftypisom", b"\x00\x00\x00\x1cftypisom",
          b"\x1a\x45\xdf\xa3"}
 
+FMT_1080 = ("bv*[height<=1080][ext=mp4]+ba[ext=m4a]/"
+            "b[height<=1080]/bv*+ba/b")
+FMT_720 = "bv*[height<=720]+ba/b/bv*+ba"
+
 
 def _shutil_which(binary: str) -> bool:
     return shutil.which(binary) is not None
 
 
-def resolve_url(entry: dict) -> str:
-    """sources.yaml entries carry either url: or search: (yt-dlp resolves)."""
-    if entry.get("url"):
-        return entry["url"]
-    q = entry["search"]
-    return f"ytsearch1:{q}"
+def _yt_dlp(url: str, out_tpl: str, fmt: str, proxy: str | None,
+            clients: str, pot: bool, timeout: int = 300) -> bool:
+    cmd = ["yt-dlp", "--no-cache-dir", "-N", "3"]
+    if proxy:
+        cmd += ["--proxy", proxy]
+    ea = f"youtube:player_client={clients}"
+    if pot:
+        ea += ";fetch_pot=always"
+    cmd += ["--extractor-args", ea]
+    if pot and os.environ.get("BGUTIL_URL"):
+        cmd += ["--extractor-args",
+                f"youtubepot-bgutilhttp:base_url={os.environ['BGUTIL_URL']}"]
+    cmd += ["-f", fmt, "--merge-output-format", "mp4", "--no-playlist",
+            "--restrict-filenames", "-o", out_tpl, url]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True,
+                           timeout=timeout)
+        return r.returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
 
 
 def download(entry: dict, dest_dir, max_h: int = 1080) -> dict:
-    """Ladder per learnings/SOURCING_LADDER.md. Tries url: then search:.
-    Returns {ok, path, method}."""
+    """Farm-first ladder per learnings/SOURCING_LADDER.md."""
     dest_dir.mkdir(parents=True, exist_ok=True)
     out_tpl = str(dest_dir / f"{entry['id']}.%(ext)s")
-    fmt = (f"bv*[height<={max_h}][ext=mp4]+ba[ext=m4a]/"
-           f"b[height<={max_h}]/bv*+ba/b")
-    attempts = []
     urls = []
     if entry.get("url"):
         urls.append(entry["url"])
     if entry.get("search"):
         urls.append(f"ytsearch1:{entry['search']}")
 
+    warp = os.environ.get("WARP_PROXY")
+    bgutil = os.environ.get("BGUTIL_URL")
+    attempts = []
+
+    # ladder profiles: (label, proxy, clients, pot, fmt)
+    profiles = []
+    if warp:
+        profiles += [
+            ("warp+mweb+pot", warp, "mweb", True, FMT_1080),
+            ("warp+web+pot", warp, "web", True, FMT_1080),
+            ("warp+web_safari+pot", warp, "web_safari", True, FMT_1080),
+            ("warp+mweb+pot720", warp, "mweb", True, FMT_720),
+        ]
+    profiles += [
+        ("tv_embedded+pot", None, "tv,web_embedded", True, FMT_720),
+        ("android_vr", None, "android_vr", False, FMT_720),
+    ]
+
     for url in urls:
+        for label, proxy, clients, pot, fmt in profiles:
+            ok = _yt_dlp(url, out_tpl, fmt, proxy, clients, pot)
+            attempts.append({"method": label, "ok": ok})
+            for p in sorted(dest_dir.glob(f"{entry['id']}.*")):
+                if p.suffix.lower() in {".mp4", ".mkv", ".webm"} and \
+                        p.stat().st_size > 500_000:
+                    return {"ok": True, "path": str(p), "method": label}
+            # small leftover files (fragments) — clean before next attempt
+            for p in dest_dir.glob(f"{entry['id']}.*"):
+                if p.stat().st_size <= 500_000:
+                    p.unlink()
         if _shutil_which("ytagent"):
-            r = subprocess.run(
-                ["ytagent", "download", url, "--out-dir", str(dest_dir),
-                 "--format", fmt, "--timeout", "240", "--json"],
-                capture_output=True, text=True, timeout=600)
-            attempts.append({"method": "ytagent", "rc": r.returncode})
             try:
-                verdict = json.loads(r.stdout.strip().splitlines()[-1])
-                if verdict.get("ok"):
-                    return {"ok": True, "path": verdict["final_path"],
-                            "method": "ytagent"}
+                r = subprocess.run(
+                    ["ytagent", "download", url, "--out-dir", str(dest_dir),
+                     "--format", FMT_1080, "--timeout", "240", "--json"],
+                    capture_output=True, text=True, timeout=600)
+                attempts.append({"method": "ytagent", "rc": r.returncode})
+                try:
+                    verdict = json.loads(
+                        r.stdout.strip().splitlines()[-1])
+                    if verdict.get("ok"):
+                        return {"ok": True, "path": verdict["final_path"],
+                                "method": "ytagent"}
+                except Exception:  # noqa: BLE001
+                    pass
             except Exception:  # noqa: BLE001
                 pass
-
-        for client in (["-N", "4"],
-                       ["--extractor-args", "youtube:player_client=android_vr",
-                        "-N", "4"]):
-            r = subprocess.run(
-                ["yt-dlp", *client, "-f", fmt, "--merge-output-format", "mp4",
-                 "--no-playlist", "-o", out_tpl, "--restrict-filenames", url],
-                capture_output=True, text=True, timeout=900)
-            attempts.append({"method": "yt-dlp", "rc": r.returncode})
-            if r.returncode == 0:
-                break
-        for p in sorted(dest_dir.glob(f"{entry['id']}.*")):
-            if p.suffix.lower() in {".mp4", ".mkv", ".webm"}:
-                return {"ok": True, "path": str(p),
-                        "method": attempts[-1]["method"] if attempts else "yt-dlp"}
-    return {"ok": False, "error": "no artifact", "attempts": attempts}
+    return {"ok": False, "error": "all ladder attempts failed",
+            "attempts": attempts}
 
 
 def validate(path: str, entry: dict) -> tuple[bool, str]:
@@ -137,8 +172,6 @@ def build(project: Project) -> dict:
             print(f"[source] {sid} FAILED: {index[sid]['error']}", flush=True)
         index_path.write_text(json.dumps(index, indent=2))
 
-    # gates: required sources + per-entity clip-capable pool sizing happens
-    # after extraction; here we fail only if a required source is dead.
     dead_required = [e["id"] for e in manifest
                      if e.get("required") and not index.get(e["id"], {}).get("ok")]
     if dead_required:
