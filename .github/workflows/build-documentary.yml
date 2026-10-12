@@ -32,11 +32,7 @@ jobs:
           pip install -r requirements.txt
           pip install -U bgutil-ytdlp-pot-provider
           pip install ytagent-cli || echo "ytagent-cli unavailable — ladder falls back to yt-dlp"
-          PLUGIN_DIR=$(python - <<'PY'
-import os, yt_dlp
-print(os.path.join(os.path.dirname(yt_dlp.__file__), "yt_dlp_plugins"))
-PY
-)
+          PLUGIN_DIR=$(python -c "import os, yt_dlp; print(os.path.join(os.path.dirname(yt_dlp.__file__), 'yt_dlp_plugins'))")
           echo "YTDLP_PLUGIN_DIRS=$PLUGIN_DIR" >> $GITHUB_ENV
 
       - name: download farm infra (WARP + BGutil POT)
