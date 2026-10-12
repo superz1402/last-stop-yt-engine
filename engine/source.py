@@ -41,8 +41,13 @@ def _yt_dlp(url: str, out_tpl: str, fmt: str, proxy: str | None,
     try:
         r = subprocess.run(cmd, capture_output=True, text=True,
                            timeout=timeout)
+        if r.returncode != 0:
+            tail = (r.stderr or "").strip().splitlines()[-4:]
+            for ln in tail:
+                sys.stderr.write(f"[yt-dlp:{clients}] {ln[-220:]}\n")
         return r.returncode == 0
     except subprocess.TimeoutExpired:
+        sys.stderr.write(f"[yt-dlp:{clients}] timeout after {timeout}s\n")
         return False
 
 
@@ -67,6 +72,7 @@ def download(entry: dict, dest_dir, max_h: int = 1080) -> dict:
             ("warp+mweb+pot", warp, "mweb", True, FMT_1080),
             ("warp+web+pot", warp, "web", True, FMT_1080),
             ("warp+web_safari+pot", warp, "web_safari", True, FMT_1080),
+            ("warp+mweb", warp, "mweb", False, FMT_1080),
             ("warp+mweb+pot720", warp, "mweb", True, FMT_720),
         ]
     profiles += [
