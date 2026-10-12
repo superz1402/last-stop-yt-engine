@@ -63,6 +63,7 @@ jobs:
         run: python -m engine.cli build ${{ inputs.project }}
         env:
           HOME: /home/runner
+          SOURCE_PACK_BASE: https://github.com/superz1402/last-stop-yt-engine/releases/download/source-pack
 
       - name: upload build reports (always)
         if: always()

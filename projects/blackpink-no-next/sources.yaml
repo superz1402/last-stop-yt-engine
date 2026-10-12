@@ -32,7 +32,7 @@ sources:
     required: true
     expect_duration_s: [150, 500]
   - id: mv_pink_venom
-    url: https://www.youtube.com/watch?v=gQlAcRqJQwo
+    url: https://www.youtube.com/watch?v=gQlMMD8auMs
     search: "BLACKPINK Pink Venom M/V"
     title: "BLACKPINK - 'Pink Venom' M/V"
     channel: BLACKPINK
@@ -42,7 +42,7 @@ sources:
     required: true
     expect_duration_s: [150, 500]
   - id: mv_shut_down
-    url: https://www.youtube.com/watch?v=POe9SOvotFY
+    url: https://www.youtube.com/watch?v=POe9SOEKotk
     search: "BLACKPINK Shut Down M/V"
     title: "BLACKPINK - 'Shut Down' M/V"
     channel: BLACKPINK
@@ -52,7 +52,7 @@ sources:
     required: true
     expect_duration_s: [150, 500]
   - id: mv_boombayah
-    url: https://www.youtube.com/watch?v=byI9VWdNyz8
+    url: https://www.youtube.com/watch?v=bwmSjveL3Lc
     search: "BLACKPINK Boombayah M/V"
     title: "BLACKPINK - '붐바야 (Boombayah)' M/V"
     channel: BLACKPINK
@@ -64,6 +64,7 @@ sources:
 
   # ===== Dance practices — scene mode (group world, real-floor texture) =====
   - id: dp_ddu_du
+    url: https://www.youtube.com/watch?v=jOJbXvjZ-cQ
     search: "BLACKPINK DDU-DU DDU-DU dance practice"
     title: "DDU-DU DDU-DU dance practice"
     channel: BLACKPINK
@@ -72,6 +73,7 @@ sources:
     required: false
     expect_duration_s: [180, 600]
   - id: dp_hylt
+    url: https://www.youtube.com/watch?v=qXm8WMZ0Jgk
     search: "BLACKPINK How You Like That dance practice"
     title: "How You Like That dance practice"
     channel: BLACKPINK
@@ -80,6 +82,7 @@ sources:
     required: false
     expect_duration_s: [180, 600]
   - id: dp_pretty_savage
+    url: https://www.youtube.com/watch?v=_IMoFiLCavc
     search: "BLACKPINK Pretty Savage dance practice"
     title: "Pretty Savage dance practice"
     channel: BLACKPINK
@@ -99,6 +102,7 @@ sources:
     required: true
     expect_duration_s: [150, 400]
   - id: solo_lisa
+    url: https://www.youtube.com/watch?v=awkkyBH2zEo
     search: "LISA LALISA M/V"
     title: "LISA - 'LALISA' M/V"
     channel: LLOUD
@@ -107,6 +111,7 @@ sources:
     required: true
     expect_duration_s: [150, 400]
   - id: solo_rose
+    url: https://www.youtube.com/watch?v=CKZvWhCqx1s
     search: "ROSÉ On The Ground M/V"
     title: "ROSÉ - 'On The Ground' M/V"
     channel: ROSÉ
@@ -115,6 +120,7 @@ sources:
     required: true
     expect_duration_s: [150, 400]
   - id: solo_jisoo
+    url: https://www.youtube.com/watch?v=YudHcBIxlYw
     search: "JISOO 꽃 FLOWER M/V"
     title: "JISOO - '꽃 (FLOWER)' M/V"
     channel: BLACKPINK
@@ -123,6 +129,7 @@ sources:
     required: true
     expect_duration_s: [150, 400]
   - id: solo_rose_apt
+    url: https://www.youtube.com/watch?v=ekr2nIex040
     search: "ROSÉ APT. Bruno Mars official music video"
     title: "ROSÉ, Bruno Mars - APT."
     channel: ROSÉ
@@ -131,6 +138,7 @@ sources:
     required: false
     expect_duration_s: [150, 400]
   - id: solo_jennie_mantra
+    url: https://www.youtube.com/watch?v=bB3-CUMERIU
     search: "JENNIE Mantra official music video"
     title: "JENNIE - 'Mantra'"
     channel: JENNIE
@@ -139,6 +147,7 @@ sources:
     required: false
     expect_duration_s: [150, 400]
   - id: solo_lisa_rockstar
+    url: https://www.youtube.com/watch?v=hbcGx4MGUMg
     search: "LISA ROCKSTAR official music video"
     title: "LISA - 'ROCKSTAR'"
     channel: LLOUD
@@ -149,6 +158,7 @@ sources:
 
   # ===== 2NE1 — the prototype (R4 related-entity ladder) =====
   - id: mv_i_am_the_best
+    url: https://www.youtube.com/watch?v=j7_lSP8Vc3o
     search: "2NE1 I AM THE BEST M/V"
     title: "2NE1 - '내가 제일 잘 나가 (I AM THE BEST)' M/V"
     channel: 2NE1
@@ -157,6 +167,7 @@ sources:
     required: true
     expect_duration_s: [180, 500]
   - id: mv_come_back_home
+    url: https://www.youtube.com/watch?v=vLbfv-AAyvQ
     search: "2NE1 COME BACK HOME M/V"
     title: "2NE1 - '컴백홈 (COME BACK HOME)' M/V"
     channel: 2NE1
@@ -167,6 +178,7 @@ sources:
 
   # ===== BABYMONSTER — the promised successor =====
   - id: mv_batter_up
+    url: https://www.youtube.com/watch?v=olDWm2veCrM
     search: "BABYMONSTER BATTER UP M/V"
     title: "BABYMONSTER - 'BATTER UP' M/V"
     channel: BABYMONSTER
@@ -175,6 +187,7 @@ sources:
     required: true
     expect_duration_s: [180, 500]
   - id: mv_sheesh
+    url: https://www.youtube.com/watch?v=2wA_b6YHjqQ
     search: "BABYMONSTER SHEESH M/V"
     title: "BABYMONSTER - 'SHEESH' M/V"
     channel: BABYMONSTER
@@ -184,6 +197,7 @@ sources:
     required: true
     expect_duration_s: [180, 500]
   - id: mv_forever
+    url: https://www.youtube.com/watch?v=eJCHKjt0MPw
     search: "BABYMONSTER FOREVER M/V"
     title: "BABYMONSTER - 'FOREVER' M/V"
     channel: BABYMONSTER
@@ -193,6 +207,7 @@ sources:
     required: false
     expect_duration_s: [150, 500]
   - id: mv_stuck_in_middle
+    url: https://www.youtube.com/watch?v=GsV1i0QHi-o
     search: "BABYMONSTER Stuck In The Middle M/V"
     title: "BABYMONSTER - 'Stuck In The Middle' M/V"
     channel: BABYMONSTER
@@ -203,6 +218,7 @@ sources:
 
   # ===== Fourth generation — the new world =====
   - id: mv_love_dive
+    url: https://www.youtube.com/watch?v=Y8JFxS1HlDo
     search: "IVE LOVE DIVE M/V"
     title: "IVE - 'LOVE DIVE' M/V"
     channel: IVE
@@ -211,6 +227,7 @@ sources:
     required: false
     expect_duration_s: [150, 400]
   - id: mv_supernova
+    url: https://www.youtube.com/watch?v=phuiiNCxRMg
     search: "aespa Supernova M/V"
     title: "aespa - 'Supernova' M/V"
     channel: SMTOWN
@@ -219,6 +236,7 @@ sources:
     required: false
     expect_duration_s: [150, 400]
   - id: mv_attention
+    url: https://www.youtube.com/watch?v=js1CtxSY38I
     search: "NewJeans Attention Official MV"
     title: "NewJeans - 'Attention'"
     channel: NewJeans

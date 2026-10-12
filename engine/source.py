@@ -51,8 +51,30 @@ def _yt_dlp(url: str, out_tpl: str, fmt: str, proxy: str | None,
         return False
 
 
+def _pack_fetch(entry_id: str, dest_dir) -> str | None:
+    """Source-pack release first (provenance-pinned, no YouTube dependency).
+    SOURCE_PACK_BASE e.g. https://github.com/OWNER/REPO/releases/download/source-pack"""
+    base = os.environ.get("SOURCE_PACK_BASE")
+    if not base:
+        return None
+    dest = dest_dir / f"{entry_id}.mp4"
+    if dest.exists() and dest.stat().st_size > 500_000:
+        return str(dest)
+    url = f"{base}/{entry_id}.mp4"
+    try:
+        r = subprocess.run(["curl", "-sL", "--fail", "-o", str(dest), url],
+                           timeout=600, capture_output=True, text=True)
+        if r.returncode == 0 and dest.exists() and dest.stat().st_size > 500_000:
+            return str(dest)
+    except Exception:  # noqa: BLE001
+        pass
+    if dest.exists() and dest.stat().st_size <= 500_000:
+        dest.unlink()
+    return None
+
+
 def download(entry: dict, dest_dir, max_h: int = 1080) -> dict:
-    """Farm-first ladder per learnings/SOURCING_LADDER.md."""
+    """Ladder: source-pack release → farm profiles → ytagent."""
     dest_dir.mkdir(parents=True, exist_ok=True)
     out_tpl = str(dest_dir / f"{entry['id']}.%(ext)s")
     urls = []
@@ -60,6 +82,11 @@ def download(entry: dict, dest_dir, max_h: int = 1080) -> dict:
         urls.append(entry["url"])
     if entry.get("search"):
         urls.append(f"ytsearch1:{entry['search']}")
+
+    # tier 0: source-pack (pre-verified, fastest, no YouTube contact)
+    packed = _pack_fetch(entry["id"], dest_dir)
+    if packed:
+        return {"ok": True, "path": packed, "method": "source-pack"}
 
     warp = os.environ.get("WARP_PROXY")
     bgutil = os.environ.get("BGUTIL_URL")
